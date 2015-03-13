@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <SDL.h>
 
+#include "ffmpeg_test.h"
+
 #define WIDTH 640
 #define HEIGHT 480
 #define BPP 4
@@ -47,20 +49,32 @@ void DrawScreen(SDL_Surface* screen, int h)
 int sdl_main(int argc, char* argv[])
 {
 	SDL_Surface *screen;
-	SDL_Event event;
+	//SDL_Event event;
 
-	int keypress = 0;
-	int h=0; 
+	//int keypress = 0;
+	//int h=0; 
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0 ) return 1;
+	if( SDL_Init(SDL_INIT_VIDEO| SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0 )
+    {
+        fprintf(stderr,"Failed to init SDL\n");
+        return 1;
+    }
 
-	if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE)))
+	if( !(screen = SDL_SetVideoMode(WIDTH, HEIGHT, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE)) )
 	{
+        fprintf(stderr,"Failed to set video mode\n");
 		SDL_Quit();
 		return 1;
 	}
 
-	while(!keypress) 
+    if( !init_ffm( screen ) )
+    {
+        fprintf(stderr,"Failed to initialize FFM\n");
+        SDL_Quit();
+        return 1;
+    }
+    
+	/*while(!keypress) 
 	{
 		DrawScreen(screen,h++);
 		while(SDL_PollEvent(&event)) 
@@ -75,8 +89,13 @@ int sdl_main(int argc, char* argv[])
 					break;
 			}
 		}
-	}
+        }*/
 
+    if( !dispatch_ffm() )
+    {
+        fprintf(stderr,"Failed to dispatch FFM\n");
+    }
+    
 	SDL_Quit();
 
 	return 0;

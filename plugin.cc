@@ -12,10 +12,17 @@
 #include <ppapi/cpp/size.h>
 #include <ppapi/cpp/input_event.h>
 
+#include <sys/stat.h>
+#include <sys/mount.h>
+#include <nacl_io/nacl_io.h>
+#include <nacl_io/nacl_io.h>
+
 #include <SDL_video.h>
+
 extern "C" {
 	extern int sdl_main(int argc, const char *argv[]);
 }
+
 #include <SDL.h>
 #include <SDL_nacl.h>
 
@@ -79,7 +86,25 @@ public:
 
 	bool Init(uint32_t argc, const char* argn[], const char* argv[])
 	{
-		return true;
+        nacl_io_init_ppapi(pp_instance(),browser_interface_);
+
+        umount("/");
+        mount("", "/", "memfs", 0, NULL);
+        mkdir("/mnt", 0777);
+        mkdir("/mnt/http", 0777);
+        const char* data_url = getenv("NACL_DATA_URL");  // returns NULL
+        if (!data_url)
+            data_url = "./";
+        int res = mount( data_url, "/mnt/http", "httpfs", 0,
+                         "allow_cross_origin_requests=true,allow_credentials=false" );
+ 
+        if( res != 0 )
+        {
+            fprintf(stderr,"HTTP mount error %d\n", res);
+            exit(1);
+        }
+        
+        return true;
 	}
 
 private:
