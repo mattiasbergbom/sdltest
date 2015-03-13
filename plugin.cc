@@ -10,6 +10,7 @@
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/rect.h>
 #include <ppapi/cpp/size.h>
+#include <ppapi/cpp/input_event.h>
 
 #include <SDL_video.h>
 extern "C" {
@@ -20,10 +21,12 @@ extern "C" {
 
 class PluginInstance : public pp::Instance {
 public:
-	explicit PluginInstance(PP_Instance instance) : pp::Instance(instance),
-	                                                sdl_main_thread_(0),
-	                                                width_(0),
-	                                                height_(0)
+	explicit PluginInstance(PP_Instance instance, PPB_GetInterface browser_interface) :
+        pp::Instance(instance),
+        sdl_main_thread_(0),
+        width_(0),
+        height_(0),
+        browser_interface_(browser_interface)
 	{}
 
 	~PluginInstance()
@@ -49,13 +52,19 @@ public:
 			width_ = position.size().width();
 			height_ = position.size().height();
 
-			SDL_NACL_SetInstance(pp_instance(), width_, height_);
+			SDL_NACL_SetInstance(pp_instance(), browser_interface_, width_, height_);
 
 			// It seems this call to SDL_Init is required. Calling from
 			// sdl_main() isn't good enough.
 			// Perhaps it must be called from the main thread?
 			int lval = SDL_Init(SDL_INIT_VIDEO);
 			assert(lval >= 0);
+            if( lval < 0 )
+            {
+                fprintf(stderr,"SDL_Init failed\n");
+                exit(1);
+            }
+            
 			if (0 == pthread_create(&sdl_main_thread_, NULL, sdl_thread, this)) {
 				sdl_thread_started_ = true;
 			}
@@ -64,11 +73,11 @@ public:
 
 	bool HandleInputEvent(const pp::InputEvent& event)
 	{
-		SDL_NACL_PushEvent(event);
+		SDL_NACL_PushEvent(event.pp_resource());
 		return true;
 	}
 
-	bool Init(int argc, const char* argn[], const char* argv[])
+	bool Init(uint32_t argc, const char* argn[], const char* argv[])
 	{
 		return true;
 	}
@@ -78,7 +87,8 @@ private:
 	pthread_t sdl_main_thread_;
 	int width_;
 	int height_;
-
+    PPB_GetInterface browser_interface_;
+    
 	static void* sdl_thread(void* param)
 	{
 		sdl_main(0, NULL);
@@ -91,7 +101,7 @@ class PepperModule : public pp::Module
 public:
 	virtual pp::Instance* CreateInstance(PP_Instance instance)
 	{
-		return new PluginInstance(instance);
+		return new PluginInstance(instance, get_browser_interface());
 	}
 };
 
