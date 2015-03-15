@@ -48,11 +48,7 @@ void DrawScreen(SDL_Surface* screen, int h)
 
 int sdl_main(int argc, char* argv[])
 {
-	SDL_Surface *screen;
-	//SDL_Event event;
-
-	//int keypress = 0;
-	//int h=0; 
+	/*SDL_Surface *screen;
 
 	if( SDL_Init(SDL_INIT_VIDEO| SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0 )
     {
@@ -65,9 +61,9 @@ int sdl_main(int argc, char* argv[])
         fprintf(stderr,"Failed to set video mode\n");
 		SDL_Quit();
 		return 1;
-	}
+        }*/
 
-    if( !init_ffm( screen ) )
+    if( !init_ffm() )//( screen ) )
     {
         fprintf(stderr,"Failed to initialize FFM\n");
         SDL_Quit();

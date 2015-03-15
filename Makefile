@@ -17,7 +17,7 @@
 #
 PROJECT:=sdltest
 CXX_SOURCES:=plugin.cc
-C_SOURCES:=sdltest.c ffmpeg_test.c
+C_SOURCES:=sdltest.c ffmpeg_test.c libav_cmdutils.c
 
 SOURCES:=$(CXX_SOURCES) $(C_SOURCES)
 VALID_TOOLCHAINS := pnacl newlib glibc pnacl
@@ -49,9 +49,10 @@ TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_$(TC))
 # Project Build flags
 WARNINGS:=-Wno-long-long -Wall -Wswitch-enum -pedantic -Werror
 SDL_CONFIG:=$(TC_PATH)/usr/bin/sdl-config
-CXXFLAGS:=-pthread -std=gnu++98 $(WARNINGS) `$(SDL_CONFIG) --cflags`
 CFLAGS:=-pthread $(WARNINGS) `$(SDL_CONFIG) --cflags`
-LDFLAGS:=-L/media/Extra/src/nacl_sdk/pepper_37/toolchain/linux_pnacl/usr/lib -Wl,--start-group -lSDLmain -lSDL -lppapi_cpp -lppapi -ltar -lpthread -lnacl_io -lc++ -lm -Wl,--end-group -lavformat -lavcodec -lswscale -lz -lavutil
+#-I/media/Extra/src/
+CXXFLAGS:=-pthread -std=gnu++98 $(WARNINGS) `$(SDL_CONFIG) --cflags`
+LDFLAGS:=-L/media/Extra/src/nacl_sdk/pepper_37/toolchain/linux_pnacl/usr/lib -Wl,--start-group -lSDLmain -lSDL -lppapi_cpp -lppapi -ltar -lpthread -lnacl_io -lc++ -lm -lavcodec -lavformat -lswscale -lz -lavutil -lavresample -lavdevice -lavfilter -lavcodec -Wl,--end-group 
 
 $(warning X86_32_CXXFLAGS: ${X86_32_CXXFLAGS})
 $(warning X86_64_CXXFLAGS: ${X86_64_CXXFLAGS})
