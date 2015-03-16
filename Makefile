@@ -16,14 +16,14 @@
 # the rest of the makefile is boilerplate for defining build rules.
 #
 PROJECT:=sdltest
-CXX_SOURCES:=plugin.cc
+CXX_SOURCES:= # plugin.cc
 C_SOURCES:=sdltest.c ffmpeg_test.c libav_cmdutils.c
 
 SOURCES:=$(CXX_SOURCES) $(C_SOURCES)
 VALID_TOOLCHAINS := pnacl newlib glibc pnacl
 
 TARGET = sdltest
-DEPS = nacl_io
+DEPS = nacl_io ppapi_simple ppapi_gles2
 LIBS = 
 
 include $(NACL_SDK_ROOT)/tools/common.mk
@@ -44,15 +44,15 @@ NACL_SDK_ROOT?=$(abspath $(dir $(THIS_MAKEFILE))../..)
 OSNAME:=$(shell python $(NACL_SDK_ROOT)/tools/getos.py)
 TC:=pnacl
 ARCH:=
-TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_$(TC))
+TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_$(TC)/le32-nacl)
 
 # Project Build flags
-WARNINGS:=-Wno-long-long -Wall -Wswitch-enum -pedantic -Werror
+WARNINGS:=-Wno-long-long -Wall -Wswitch-enum -Werror # -pedantic
 SDL_CONFIG:=$(TC_PATH)/usr/bin/sdl-config
 CFLAGS:=-pthread $(WARNINGS) `$(SDL_CONFIG) --cflags`
 #-I/media/Extra/src/
 CXXFLAGS:=-pthread -std=gnu++98 $(WARNINGS) `$(SDL_CONFIG) --cflags`
-LDFLAGS:=-L/media/Extra/src/nacl_sdk/pepper_37/toolchain/linux_pnacl/usr/lib -Wl,--start-group -lSDLmain -lSDL -lppapi_cpp -lppapi -ltar -lpthread -lnacl_io -lc++ -lm -lavcodec -lavformat -lswscale -lz -lavutil -lavresample -lavdevice -lavfilter -lavcodec -Wl,--end-group 
+LDFLAGS:=-L/media/Extra/src/nacl_sdk/pepper_42/toolchain/linux_pnacl/le32-nacl/usr/lib -Wl,--undefined=PSUserCreateInstance -Wl,--start-group -lSDL -lppapi_simple -lSDLmain -lSDL -lppapi_gles2 -lppapi_cpp -lppapi -ltar -lpthread -lnacl_io -lc++ -lm -lavcodec -lavformat -lswscale -lz -lavutil -lavresample -lavdevice -lavfilter -lavcodec -lnacl_spawn -lcli_main -lRegal -lglslopt -Wl,--end-group
 
 $(warning X86_32_CXXFLAGS: ${X86_32_CXXFLAGS})
 $(warning X86_64_CXXFLAGS: ${X86_64_CXXFLAGS})

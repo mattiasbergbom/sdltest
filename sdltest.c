@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_main.h>
+
+#include <ppapi_simple/ps_main.h>
 
 #include "ffmpeg_test.h"
 
@@ -46,7 +49,7 @@ void DrawScreen(SDL_Surface* screen, int h)
 }
 
 
-int sdl_main(int argc, char* argv[])
+int SDL_main(int argc, char* argv[])
 {
 	/*SDL_Surface *screen;
 

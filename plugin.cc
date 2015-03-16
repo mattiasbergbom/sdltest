@@ -24,7 +24,7 @@ extern "C" {
 }
 
 #include <SDL.h>
-#include <SDL_nacl.h>
+//#include <SDL_nacl.h>
 
 class PluginInstance : public pp::Instance {
 public:
@@ -59,7 +59,7 @@ public:
 			width_ = position.size().width();
 			height_ = position.size().height();
 
-			SDL_NACL_SetInstance(pp_instance(), browser_interface_, width_, height_);
+			/*SDL_NACL_SetInstance(pp_instance(), browser_interface_, width_, height_);
 
 			// It seems this call to SDL_Init is required. Calling from
 			// sdl_main() isn't good enough.
@@ -71,16 +71,17 @@ public:
                 fprintf(stderr,"SDL_Init failed\n");
                 exit(1);
             }
-            
-			if (0 == pthread_create(&sdl_main_thread_, NULL, sdl_thread, this)) {
+            */
+
+            if (0 == pthread_create(&sdl_main_thread_, NULL, sdl_thread, this)) {
 				sdl_thread_started_ = true;
-			}
+            }
 		}
 	}
 
 	bool HandleInputEvent(const pp::InputEvent& event)
 	{
-		SDL_NACL_PushEvent(event.pp_resource());
+		//SDL_NACL_PushEvent(event.pp_resource());
 		return true;
 	}
 
